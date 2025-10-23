@@ -2,15 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, LogOut } from "lucide-react";
+import { MessageCircle, LogOut, Users, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatRoomList from "@/components/chat/ChatRoomList";
+import FriendsList from "@/components/chat/FriendsList";
 import ChatWindow from "@/components/chat/ChatWindow";
+import PrivateChatWindow from "@/components/chat/PrivateChatWindow";
 
 const Chat = () => {
   const [session, setSession] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [selectedRoom, setSelectedRoom] = useState<any>(null);
+  const [selectedFriend, setSelectedFriend] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("rooms");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -52,6 +57,18 @@ const Chat = () => {
     } else {
       setProfile(data);
     }
+  };
+
+  const handleSelectFriend = (friendId: string, friendProfile: any) => {
+    setSelectedFriend(friendProfile);
+    setSelectedRoom(null);
+    setActiveTab("friends");
+  };
+
+  const handleSelectRoom = (room: any) => {
+    setSelectedRoom(room);
+    setSelectedFriend(null);
+    setActiveTab("rooms");
   };
 
   const handleSignOut = async () => {
@@ -112,16 +129,47 @@ const Chat = () => {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex overflow-hidden">
-        <ChatRoomList
-          profile={profile}
-          selectedRoom={selectedRoom}
-          onSelectRoom={setSelectedRoom}
-        />
-        <ChatWindow
-          session={session}
-          profile={profile}
-          selectedRoom={selectedRoom}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <div className="border-b bg-card px-4">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="rooms" className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Rooms
+              </TabsTrigger>
+              <TabsTrigger value="friends" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Friends
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <div className="flex-1 flex overflow-hidden">
+            <TabsContent value="rooms" className="flex-1 flex m-0">
+              <ChatRoomList
+                profile={profile}
+                selectedRoom={selectedRoom}
+                onSelectRoom={handleSelectRoom}
+              />
+              <ChatWindow
+                session={session}
+                profile={profile}
+                selectedRoom={selectedRoom}
+              />
+            </TabsContent>
+
+            <TabsContent value="friends" className="flex-1 flex m-0">
+              <FriendsList
+                profile={profile}
+                onSelectFriend={handleSelectFriend}
+              />
+              <PrivateChatWindow
+                session={session}
+                profile={profile}
+                selectedFriend={selectedFriend}
+              />
+            </TabsContent>
+          </div>
+        </Tabs>
       </div>
     </div>
   );
