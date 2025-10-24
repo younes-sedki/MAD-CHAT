@@ -22,8 +22,10 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    loadFriends();
-    loadPendingRequests();
+    if (profile) {
+      loadFriends();
+      loadPendingRequests();
+    }
   }, [profile]);
 
   const loadFriends = async () => {
@@ -58,14 +60,34 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
 
   const loadPendingRequests = async () => {
     try {
-      const { data, error } = await supabase
+      // Get pending requests where current user is user2
+      const { data: requests, error } = await supabase
         .from("friendships")
-        .select("*, profiles!friendships_user1_id_fkey(username, city)")
+        .select("*")
         .eq("user2_id", profile.id)
         .eq("status", "pending");
 
       if (error) throw error;
-      setPendingRequests(data || []);
+
+      if (requests && requests.length > 0) {
+        // Fetch profiles for the senders (user1)
+        const senderIds = requests.map(r => r.user1_id);
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, username, city")
+          .in("id", senderIds);
+
+        const profileMap = new Map(profiles?.map(p => [p.id, p]));
+        
+        const requestsWithProfiles = requests.map(req => ({
+          ...req,
+          profiles: profileMap.get(req.user1_id),
+        }));
+
+        setPendingRequests(requestsWithProfiles);
+      } else {
+        setPendingRequests([]);
+      }
     } catch (error: any) {
       console.error("Error loading pending requests:", error);
     }
@@ -274,10 +296,10 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <p className="font-medium text-sm">
-                      {request.profiles?.username}
+                      {request.profiles?.username || 'Unknown User'}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {request.profiles?.city}
+                      {request.profiles?.city || 'Unknown'}
                     </p>
                   </div>
                 </div>
