@@ -215,15 +215,16 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
   };
 
   return (
-    <div className="w-80 border-r bg-card flex flex-col">
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold text-lg">Friends</h2>
+    <div className="w-full md:w-80 border-r bg-card flex flex-col h-full">
+      <div className="p-3 md:p-4 border-b shrink-0">
+        <div className="flex items-center justify-between mb-2 md:mb-3">
+          <h2 className="font-semibold text-base md:text-lg">Friends</h2>
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="sm" variant="outline">
-                <UserPlus className="w-4 h-4 mr-2" />
-                Add Friend
+              <Button size="sm" variant="outline" className="text-xs md:text-sm">
+                <UserPlus className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">Add Friend</span>
+                <span className="sm:hidden">Add</span>
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -336,20 +337,20 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
             <button
               key={friend.id}
               onClick={() => onSelectFriend(friend.id, friend)}
-              className="w-full p-3 rounded-lg text-left transition-colors flex items-center gap-3 hover:bg-muted"
+              className="w-full p-2 md:p-3 rounded-lg text-left transition-colors flex items-center gap-2 md:gap-3 hover:bg-muted"
             >
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="font-semibold text-primary">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="font-semibold text-primary text-sm md:text-base">
                   {friend.username.charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{friend.username}</p>
+                <p className="font-medium truncate text-sm md:text-base">{friend.username}</p>
                 <p className="text-xs text-muted-foreground truncate">
                   {friend.city}
                 </p>
               </div>
-              <MessageCircle className="w-4 h-4 text-muted-foreground" />
+              <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground shrink-0" />
             </button>
           ))}
           {friends.length === 0 && pendingRequests.length === 0 && (

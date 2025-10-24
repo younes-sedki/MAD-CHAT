@@ -104,16 +104,16 @@ const ChatRoomList = ({ profile, selectedRoom, onSelectRoom }: ChatRoomListProps
   }
 
   return (
-    <div className="w-80 border-r bg-card flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="font-semibold text-lg mb-3">Chat Rooms</h2>
+    <div className="w-full md:w-80 border-r bg-card flex flex-col h-full">
+      <div className="p-3 md:p-4 border-b shrink-0">
+        <h2 className="font-semibold text-base md:text-lg mb-2 md:mb-3">Chat Rooms</h2>
         <Button
           variant="outline"
           size="sm"
           onClick={checkAndCreateCityRoom}
-          className="w-full flex items-center gap-2"
+          className="w-full flex items-center gap-2 text-xs md:text-sm"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3 md:w-4 md:h-4" />
           Create {profile.city} Room
         </Button>
       </div>
@@ -124,15 +124,15 @@ const ChatRoomList = ({ profile, selectedRoom, onSelectRoom }: ChatRoomListProps
             <button
               key={room.id}
               onClick={() => onSelectRoom(room)}
-              className={`w-full p-3 rounded-lg text-left transition-colors flex items-center gap-3 ${
+              className={`w-full p-2 md:p-3 rounded-lg text-left transition-colors flex items-center gap-2 md:gap-3 ${
                 selectedRoom?.id === room.id
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-muted"
               }`}
             >
-              <MessageCircle className="w-5 h-5 flex-shrink-0" />
+              <MessageCircle className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{room.name}</p>
+                <p className="font-medium truncate text-sm md:text-base">{room.name}</p>
                 <p
                   className={`text-xs truncate ${
                     selectedRoom?.id === room.id

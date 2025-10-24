@@ -158,15 +158,15 @@ const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full">
       {/* Room Header */}
-      <div className="border-b bg-card p-4">
-        <h2 className="font-semibold text-lg">{selectedRoom.name}</h2>
-        <p className="text-sm text-muted-foreground">{selectedRoom.city}</p>
+      <div className="border-b bg-card p-3 md:p-4 shrink-0">
+        <h2 className="font-semibold text-base md:text-lg">{selectedRoom.name}</h2>
+        <p className="text-xs md:text-sm text-muted-foreground">{selectedRoom.city}</p>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-3 md:p-4">
         <div className="space-y-4">
           {messages.map((message) => {
             const isOwnMessage = message.sender_id === session.user.id;
@@ -176,7 +176,7 @@ const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
                 className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
+                  className={`max-w-[85%] md:max-w-[70%] rounded-lg p-2 md:p-3 ${
                     isOwnMessage
                       ? "bg-primary text-primary-foreground"
                       : "bg-card border"
@@ -190,7 +190,7 @@ const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
                       </span>
                     </p>
                   )}
-                  <p className="break-words">{message.content}</p>
+                  <p className="break-words text-sm md:text-base">{message.content}</p>
                   <p
                     className={`text-xs mt-1 ${
                       isOwnMessage
@@ -212,7 +212,7 @@ const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="border-t bg-card p-4">
+      <div className="border-t bg-card p-3 md:p-4 shrink-0">
         <form onSubmit={sendMessage} className="flex gap-2">
           <Input
             value={newMessage}

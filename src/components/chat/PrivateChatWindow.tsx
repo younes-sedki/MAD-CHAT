@@ -203,24 +203,24 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col h-full">
       {/* Chat Header */}
-      <div className="border-b bg-card p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="font-semibold text-primary">
+      <div className="border-b bg-card p-3 md:p-4 shrink-0">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <span className="font-semibold text-primary text-sm md:text-base">
               {selectedFriend.username.charAt(0).toUpperCase()}
             </span>
           </div>
-          <div>
-            <h2 className="font-semibold text-lg">{selectedFriend.username}</h2>
-            <p className="text-sm text-muted-foreground">{selectedFriend.city}</p>
+          <div className="min-w-0">
+            <h2 className="font-semibold text-base md:text-lg truncate">{selectedFriend.username}</h2>
+            <p className="text-xs md:text-sm text-muted-foreground truncate">{selectedFriend.city}</p>
           </div>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-3 md:p-4">
         <div className="space-y-4">
           {messages.map((message) => {
             const isOwnMessage = message.sender_id === session.user.id;
@@ -230,13 +230,13 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
                 className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[70%] rounded-lg p-3 ${
+                  className={`max-w-[85%] md:max-w-[70%] rounded-lg p-2 md:p-3 ${
                     isOwnMessage
                       ? "bg-primary text-primary-foreground"
                       : "bg-card border"
                   }`}
                 >
-                  <p className="break-words">{message.content}</p>
+                  <p className="break-words text-sm md:text-base">{message.content}</p>
                   <p
                     className={`text-xs mt-1 ${
                       isOwnMessage
@@ -258,7 +258,7 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="border-t bg-card p-4">
+      <div className="border-t bg-card p-3 md:p-4 shrink-0">
         <form onSubmit={sendMessage} className="flex gap-2">
           <Input
             value={newMessage}

@@ -102,15 +102,15 @@ const Chat = () => {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full gradient-hero flex items-center justify-center">
-              <MessageCircle className="w-5 h-5 text-white" />
+      <header className="border-b bg-card shadow-sm shrink-0">
+        <div className="container mx-auto px-4 h-14 md:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 md:gap-3 min-w-0">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full gradient-hero flex items-center justify-center shrink-0">
+              <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
-            <div>
-              <h1 className="font-bold text-lg text-gradient">MoroccoChat</h1>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0">
+              <h1 className="font-bold text-base md:text-lg text-gradient truncate">MoroccoChat</h1>
+              <p className="text-xs text-muted-foreground truncate">
                 {profile.username} • {profile.city}
               </p>
             </div>
@@ -119,10 +119,10 @@ const Chat = () => {
             variant="outline"
             size="sm"
             onClick={handleSignOut}
-            className="flex items-center gap-2"
+            className="flex items-center gap-1 md:gap-2 shrink-0"
           >
-            <LogOut className="w-4 h-4" />
-            Sign Out
+            <LogOut className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Sign Out</span>
           </Button>
         </div>
       </header>
@@ -130,43 +130,76 @@ const Chat = () => {
       {/* Main Chat Area */}
       <div className="flex-1 flex overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <div className="border-b bg-card px-4">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="rooms" className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
-                Rooms
+          <div className="border-b bg-card px-2 md:px-4 shrink-0">
+            <TabsList className="grid w-full grid-cols-2 h-12">
+              <TabsTrigger value="rooms" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
+                <span>Rooms</span>
               </TabsTrigger>
-              <TabsTrigger value="friends" className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Friends
+              <TabsTrigger value="friends" className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                <Users className="w-3 h-3 md:w-4 md:h-4" />
+                <span>Friends</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
           <div className="flex-1 flex overflow-hidden">
-            <TabsContent value="rooms" className="flex-1 flex m-0">
-              <ChatRoomList
-                profile={profile}
-                selectedRoom={selectedRoom}
-                onSelectRoom={handleSelectRoom}
-              />
-              <ChatWindow
-                session={session}
-                profile={profile}
-                selectedRoom={selectedRoom}
-              />
+            <TabsContent value="rooms" className="flex-1 flex m-0 flex-col md:flex-row">
+              <div className="md:hidden w-full">
+                {selectedRoom ? (
+                  <ChatWindow
+                    session={session}
+                    profile={profile}
+                    selectedRoom={selectedRoom}
+                  />
+                ) : (
+                  <ChatRoomList
+                    profile={profile}
+                    selectedRoom={selectedRoom}
+                    onSelectRoom={handleSelectRoom}
+                  />
+                )}
+              </div>
+              <div className="hidden md:flex md:flex-1">
+                <ChatRoomList
+                  profile={profile}
+                  selectedRoom={selectedRoom}
+                  onSelectRoom={handleSelectRoom}
+                />
+                <ChatWindow
+                  session={session}
+                  profile={profile}
+                  selectedRoom={selectedRoom}
+                />
+              </div>
             </TabsContent>
 
-            <TabsContent value="friends" className="flex-1 flex m-0">
-              <FriendsList
-                profile={profile}
-                onSelectFriend={handleSelectFriend}
-              />
-              <PrivateChatWindow
-                session={session}
-                profile={profile}
-                selectedFriend={selectedFriend}
-              />
+            <TabsContent value="friends" className="flex-1 flex m-0 flex-col md:flex-row">
+              <div className="md:hidden w-full">
+                {selectedFriend ? (
+                  <PrivateChatWindow
+                    session={session}
+                    profile={profile}
+                    selectedFriend={selectedFriend}
+                  />
+                ) : (
+                  <FriendsList
+                    profile={profile}
+                    onSelectFriend={handleSelectFriend}
+                  />
+                )}
+              </div>
+              <div className="hidden md:flex md:flex-1">
+                <FriendsList
+                  profile={profile}
+                  onSelectFriend={handleSelectFriend}
+                />
+                <PrivateChatWindow
+                  session={session}
+                  profile={profile}
+                  selectedFriend={selectedFriend}
+                />
+              </div>
             </TabsContent>
           </div>
         </Tabs>
