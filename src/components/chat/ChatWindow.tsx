@@ -3,13 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send } from "lucide-react";
+import { Send, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ChatWindowProps {
   session: any;
   profile: any;
   selectedRoom: any;
+  onBack?: () => void;
 }
 
 interface Message {
@@ -23,7 +24,7 @@ interface Message {
   };
 }
 
-const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
+const ChatWindow = ({ session, profile, selectedRoom, onBack }: ChatWindowProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -161,8 +162,22 @@ const ChatWindow = ({ session, profile, selectedRoom }: ChatWindowProps) => {
     <div className="flex-1 flex flex-col h-full">
       {/* Room Header */}
       <div className="border-b bg-card p-3 md:p-4 shrink-0">
-        <h2 className="font-semibold text-base md:text-lg">{selectedRoom.name}</h2>
-        <p className="text-xs md:text-sm text-muted-foreground">{selectedRoom.city}</p>
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="md:hidden shrink-0"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          )}
+          <div className="flex-1 min-w-0">
+            <h2 className="font-semibold text-base md:text-lg truncate">{selectedRoom.name}</h2>
+            <p className="text-xs md:text-sm text-muted-foreground truncate">{selectedRoom.city}</p>
+          </div>
+        </div>
       </div>
 
       {/* Messages */}

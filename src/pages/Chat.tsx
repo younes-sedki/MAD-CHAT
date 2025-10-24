@@ -62,13 +62,16 @@ const Chat = () => {
   const handleSelectFriend = (friendId: string, friendProfile: any) => {
     setSelectedFriend(friendProfile);
     setSelectedRoom(null);
-    setActiveTab("friends");
   };
 
   const handleSelectRoom = (room: any) => {
     setSelectedRoom(room);
     setSelectedFriend(null);
-    setActiveTab("rooms");
+  };
+
+  const handleBackToList = () => {
+    setSelectedRoom(null);
+    setSelectedFriend(null);
   };
 
   const handleSignOut = async () => {
@@ -144,13 +147,15 @@ const Chat = () => {
           </div>
 
           <div className="flex-1 flex overflow-hidden">
-            <TabsContent value="rooms" className="flex-1 flex m-0 flex-col md:flex-row">
-              <div className="md:hidden w-full">
+            <TabsContent value="rooms" className="flex-1 flex m-0">
+              {/* Mobile View - Show either list or chat */}
+              <div className={`w-full md:hidden ${selectedRoom ? 'flex' : 'flex'}`}>
                 {selectedRoom ? (
                   <ChatWindow
                     session={session}
                     profile={profile}
                     selectedRoom={selectedRoom}
+                    onBack={handleBackToList}
                   />
                 ) : (
                   <ChatRoomList
@@ -160,6 +165,8 @@ const Chat = () => {
                   />
                 )}
               </div>
+              
+              {/* Desktop View - Show both list and chat side by side */}
               <div className="hidden md:flex md:flex-1">
                 <ChatRoomList
                   profile={profile}
@@ -170,17 +177,20 @@ const Chat = () => {
                   session={session}
                   profile={profile}
                   selectedRoom={selectedRoom}
+                  onBack={handleBackToList}
                 />
               </div>
             </TabsContent>
 
-            <TabsContent value="friends" className="flex-1 flex m-0 flex-col md:flex-row">
-              <div className="md:hidden w-full">
+            <TabsContent value="friends" className="flex-1 flex m-0">
+              {/* Mobile View - Show either list or chat */}
+              <div className={`w-full md:hidden ${selectedFriend ? 'flex' : 'flex'}`}>
                 {selectedFriend ? (
                   <PrivateChatWindow
                     session={session}
                     profile={profile}
                     selectedFriend={selectedFriend}
+                    onBack={handleBackToList}
                   />
                 ) : (
                   <FriendsList
@@ -189,6 +199,8 @@ const Chat = () => {
                   />
                 )}
               </div>
+              
+              {/* Desktop View - Show both list and chat side by side */}
               <div className="hidden md:flex md:flex-1">
                 <FriendsList
                   profile={profile}
@@ -198,6 +210,7 @@ const Chat = () => {
                   session={session}
                   profile={profile}
                   selectedFriend={selectedFriend}
+                  onBack={handleBackToList}
                 />
               </div>
             </TabsContent>

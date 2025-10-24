@@ -3,13 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, UserPlus } from "lucide-react";
+import { Send, UserPlus, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface PrivateChatWindowProps {
   session: any;
   profile: any;
   selectedFriend: any;
+  onBack?: () => void;
 }
 
 interface Message {
@@ -22,7 +23,7 @@ interface Message {
   };
 }
 
-const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWindowProps) => {
+const PrivateChatWindow = ({ session, profile, selectedFriend, onBack }: PrivateChatWindowProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -207,12 +208,22 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
       {/* Chat Header */}
       <div className="border-b bg-card p-3 md:p-4 shrink-0">
         <div className="flex items-center gap-2 md:gap-3">
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onBack}
+              className="md:hidden shrink-0"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          )}
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
             <span className="font-semibold text-primary text-sm md:text-base">
               {selectedFriend.username.charAt(0).toUpperCase()}
             </span>
           </div>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h2 className="font-semibold text-base md:text-lg truncate">{selectedFriend.username}</h2>
             <p className="text-xs md:text-sm text-muted-foreground truncate">{selectedFriend.city}</p>
           </div>
