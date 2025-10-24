@@ -221,7 +221,7 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
 
       {/* Messages */}
       <ScrollArea className="flex-1 p-3 md:p-4">
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4 max-w-4xl mx-auto">
           {messages.map((message) => {
             const isOwnMessage = message.sender_id === session.user.id;
             return (
@@ -230,17 +230,17 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
                 className={`flex ${isOwnMessage ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[85%] md:max-w-[70%] rounded-lg p-2 md:p-3 ${
+                  className={`max-w-[85%] md:max-w-[65%] rounded-2xl px-3 py-2 md:px-4 md:py-2.5 shadow-sm ${
                     isOwnMessage
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border"
+                      ? "bg-primary text-primary-foreground rounded-br-sm"
+                      : "bg-card border rounded-bl-sm"
                   }`}
                 >
-                  <p className="break-words text-sm md:text-base">{message.content}</p>
+                  <p className="break-words text-sm md:text-base leading-relaxed">{message.content}</p>
                   <p
-                    className={`text-xs mt-1 ${
+                    className={`text-[10px] md:text-xs mt-1 ${
                       isOwnMessage
-                        ? "text-primary-foreground/70"
+                        ? "text-primary-foreground/60 text-right"
                         : "text-muted-foreground"
                     }`}
                   >
@@ -259,15 +259,20 @@ const PrivateChatWindow = ({ session, profile, selectedFriend }: PrivateChatWind
 
       {/* Message Input */}
       <div className="border-t bg-card p-3 md:p-4 shrink-0">
-        <form onSubmit={sendMessage} className="flex gap-2">
+        <form onSubmit={sendMessage} className="flex gap-2 max-w-4xl mx-auto">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={`Message ${selectedFriend.username}...`}
             disabled={loading}
-            className="flex-1"
+            className="flex-1 rounded-full px-4"
           />
-          <Button type="submit" disabled={loading || !newMessage.trim()}>
+          <Button 
+            type="submit" 
+            disabled={loading || !newMessage.trim()}
+            size="icon"
+            className="rounded-full w-10 h-10 md:w-11 md:h-11 shrink-0"
+          >
             <Send className="w-4 h-4" />
           </Button>
         </form>
