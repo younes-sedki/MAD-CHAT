@@ -132,7 +132,7 @@ const ChatRoomList = ({ profile, selectedRoom, onSelectRoom }: ChatRoomListProps
             >
               <MessageCircle className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium truncate text-sm md:text-base">{room.name}</p>
+                <p className="font-medium truncate text-sm md:text-base">{room.city_name}</p>
                 <p
                   className={`text-xs truncate ${
                     selectedRoom?.id === room.id
@@ -140,7 +140,7 @@ const ChatRoomList = ({ profile, selectedRoom, onSelectRoom }: ChatRoomListProps
                       : "text-muted-foreground"
                   }`}
                 >
-                  {room.city}
+                  {room.message_count || 0} messages • {room.member_count || 0} members
                 </p>
               </div>
             </button>

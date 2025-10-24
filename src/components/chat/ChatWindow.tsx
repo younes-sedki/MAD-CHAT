@@ -56,11 +56,12 @@ const ChatWindow = ({ session, profile, selectedRoom, onBack }: ChatWindowProps)
         .from("messages")
         .select("*")
         .eq("room_id", selectedRoom.id)
-        .order("created_at", { ascending: true });
+        .eq("is_private", false)
+        .order("created_at", { ascending: true })
+        .limit(100);
 
       if (error) throw error;
 
-      // Fetch profiles separately
       if (data && data.length > 0) {
         const senderIds = [...new Set(data.map((msg) => msg.sender_id))];
         const { data: profiles } = await supabase
@@ -69,7 +70,7 @@ const ChatWindow = ({ session, profile, selectedRoom, onBack }: ChatWindowProps)
           .in("id", senderIds);
 
         const profileMap = new Map(profiles?.map((p) => [p.id, p]));
-        
+
         const messagesWithProfiles = data.map((msg) => ({
           ...msg,
           profiles: profileMap.get(msg.sender_id),
@@ -131,6 +132,7 @@ const ChatWindow = ({ session, profile, selectedRoom, onBack }: ChatWindowProps)
         room_id: selectedRoom.id,
         sender_id: session.user.id,
         content: newMessage.trim(),
+        is_private: false,
       });
 
       if (error) throw error;
@@ -174,8 +176,10 @@ const ChatWindow = ({ session, profile, selectedRoom, onBack }: ChatWindowProps)
             </Button>
           )}
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-base md:text-lg truncate">{selectedRoom.name}</h2>
-            <p className="text-xs md:text-sm text-muted-foreground truncate">{selectedRoom.city}</p>
+            <h2 className="font-semibold text-base md:text-lg truncate">{selectedRoom.city_name}</h2>
+            <p className="text-xs md:text-sm text-muted-foreground truncate">
+              {selectedRoom.message_count || 0} messages • {selectedRoom.member_count || 0} members
+            </p>
           </div>
         </div>
       </div>

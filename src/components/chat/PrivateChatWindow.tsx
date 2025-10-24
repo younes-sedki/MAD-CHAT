@@ -38,11 +38,11 @@ const PrivateChatWindow = ({ session, profile, selectedFriend, onBack }: Private
   }, [selectedFriend]);
 
   useEffect(() => {
-    if (privateRoom) {
+    if (selectedFriend) {
       loadMessages();
       subscribeToMessages();
     }
-  }, [privateRoom]);
+  }, [selectedFriend]);
 
   useEffect(() => {
     scrollToBottom();
@@ -55,52 +55,20 @@ const PrivateChatWindow = ({ session, profile, selectedFriend, onBack }: Private
   };
 
   const initializePrivateChat = async () => {
-    try {
-      // Check if private room already exists between these two users
-      const { data: existingRooms, error: roomError } = await supabase
-        .from("chat_rooms")
-        .select("*")
-        .eq("is_private", true)
-        .or(`name.eq.${profile.id}_${selectedFriend.id},name.eq.${selectedFriend.id}_${profile.id}`);
-
-      if (roomError) throw roomError;
-
-      if (existingRooms && existingRooms.length > 0) {
-        setPrivateRoom(existingRooms[0]);
-      } else {
-        // Create new private room
-        const roomName = `${profile.id}_${selectedFriend.id}`;
-        const { data: newRoom, error: createError } = await supabase
-          .from("chat_rooms")
-          .insert({
-            name: roomName,
-            is_private: true,
-          })
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        setPrivateRoom(newRoom);
-      }
-    } catch (error: any) {
-      console.error("Error initializing private chat:", error);
-      toast({
-        title: "Error",
-        description: "Failed to initialize chat.",
-        variant: "destructive",
-      });
-    }
+    setPrivateRoom({ id: `private_${profile.id}_${selectedFriend.id}` });
   };
 
   const loadMessages = async () => {
-    if (!privateRoom) return;
+    if (!selectedFriend) return;
 
     try {
       const { data, error } = await supabase
         .from("messages")
         .select("*")
-        .eq("room_id", privateRoom.id)
-        .order("created_at", { ascending: true });
+        .eq("is_private", true)
+        .or(`and(sender_id.eq.${profile.id},recipient_id.eq.${selectedFriend.id}),and(sender_id.eq.${selectedFriend.id},recipient_id.eq.${profile.id})`)
+        .order("created_at", { ascending: true })
+        .limit(100);
 
       if (error) throw error;
 
@@ -128,24 +96,31 @@ const PrivateChatWindow = ({ session, profile, selectedFriend, onBack }: Private
   };
 
   const subscribeToMessages = () => {
-    if (!privateRoom) return;
+    if (!selectedFriend) return;
 
+    const channelName = `private_${profile.id}_${selectedFriend.id}`;
     const channel = supabase
-      .channel(`private_room:${privateRoom.id}`)
+      .channel(channelName)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "messages",
-          filter: `room_id=eq.${privateRoom.id}`,
+          filter: `is_private=eq.true`,
         },
         async (payload) => {
+          const isRelevant =
+            (payload.new.sender_id === profile.id && payload.new.recipient_id === selectedFriend.id) ||
+            (payload.new.sender_id === selectedFriend.id && payload.new.recipient_id === profile.id);
+
+          if (!isRelevant) return;
+
           const { data: profileData } = await supabase
             .from("profiles")
             .select("username")
             .eq("id", payload.new.sender_id)
-            .single();
+            .maybeSingle();
 
           const newMsg = {
             ...payload.new,
@@ -164,15 +139,16 @@ const PrivateChatWindow = ({ session, profile, selectedFriend, onBack }: Private
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !privateRoom || loading) return;
+    if (!newMessage.trim() || !selectedFriend || loading) return;
 
     setLoading(true);
 
     try {
       const { error } = await supabase.from("messages").insert({
-        room_id: privateRoom.id,
         sender_id: session.user.id,
+        recipient_id: selectedFriend.id,
         content: newMessage.trim(),
+        is_private: true,
       });
 
       if (error) throw error;

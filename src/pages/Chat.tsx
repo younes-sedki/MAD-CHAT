@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, LogOut, Users, MessageSquare } from "lucide-react";
+import { MessageCircle, LogOut, Users, MessageSquare, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ChatRoomList from "@/components/chat/ChatRoomList";
@@ -118,15 +118,26 @@ const Chat = () => {
               </p>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSignOut}
-            className="flex items-center gap-1 md:gap-2 shrink-0"
-          >
-            <LogOut className="w-3 h-3 md:w-4 md:h-4" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/profile")}
+              className="flex items-center gap-1 md:gap-2"
+            >
+              <User className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Profile</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleSignOut}
+              className="flex items-center gap-1 md:gap-2"
+            >
+              <LogOut className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </Button>
+          </div>
         </div>
       </header>
 

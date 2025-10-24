@@ -34,14 +34,13 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
         .from("friendships")
         .select("*")
         .eq("status", "accepted")
-        .or(`user1_id.eq.${profile.id},user2_id.eq.${profile.id}`);
+        .or(`requester_id.eq.${profile.id},recipient_id.eq.${profile.id}`);
 
       if (error) throw error;
 
-      // Get friend profiles
       if (data && data.length > 0) {
         const friendIds = data.map((f) =>
-          f.user1_id === profile.id ? f.user2_id : f.user1_id
+          f.requester_id === profile.id ? f.recipient_id : f.requester_id
         );
 
         const { data: profiles } = await supabase
@@ -60,28 +59,26 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
 
   const loadPendingRequests = async () => {
     try {
-      // Get pending requests where current user is user2
       const { data: requests, error } = await supabase
         .from("friendships")
         .select("*")
-        .eq("user2_id", profile.id)
+        .eq("recipient_id", profile.id)
         .eq("status", "pending");
 
       if (error) throw error;
 
       if (requests && requests.length > 0) {
-        // Fetch profiles for the senders (user1)
-        const senderIds = requests.map(r => r.user1_id);
+        const senderIds = requests.map(r => r.requester_id);
         const { data: profiles } = await supabase
           .from("profiles")
           .select("id, username, city")
           .in("id", senderIds);
 
         const profileMap = new Map(profiles?.map(p => [p.id, p]));
-        
+
         const requestsWithProfiles = requests.map(req => ({
           ...req,
-          profiles: profileMap.get(req.user1_id),
+          profiles: profileMap.get(req.requester_id),
         }));
 
         setPendingRequests(requestsWithProfiles);
@@ -124,11 +121,10 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
 
   const sendFriendRequest = async (userId: string) => {
     try {
-      // Check if friendship already exists
       const { data: existing } = await supabase
         .from("friendships")
         .select("*")
-        .or(`and(user1_id.eq.${profile.id},user2_id.eq.${userId}),and(user1_id.eq.${userId},user2_id.eq.${profile.id})`);
+        .or(`and(requester_id.eq.${profile.id},recipient_id.eq.${userId}),and(requester_id.eq.${userId},recipient_id.eq.${profile.id})`);
 
       if (existing && existing.length > 0) {
         toast({
@@ -139,8 +135,8 @@ const FriendsList = ({ profile, onSelectFriend }: FriendsListProps) => {
       }
 
       const { error } = await supabase.from("friendships").insert({
-        user1_id: profile.id,
-        user2_id: userId,
+        requester_id: profile.id,
+        recipient_id: userId,
         status: "pending",
       });
 
